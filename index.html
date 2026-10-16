@@ -1,0 +1,1893 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="teal">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#4f9bb0">
+<meta name="description" content="Budget Pro - Local-first offline financial ledger and budget planner">
+
+<!-- iOS Safari PWA Standalone Meta Tags -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Budget Pro">
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+<title>Budget Pro</title>
+<style>
+:root {
+  --bg: #eef6f5; --card: #fff; --ink: #1d2b2a; --muted: #6b7b7a; --line: #e2ebea;
+  --green: #2e9e5b; --blue: #2f7f9e; --gold: #b8862a; --red: #c9534b; --teal: #4f9bb0;
+  --yellow: #e0a80e; --shadow: rgba(0,0,0,0.08);
+}
+[data-theme="dark"] {
+  --bg: #121818; --card: #1a2222; --ink: #ecfdf5; --muted: #9ca3af; --line: #2b3737;
+  --green: #34d399; --blue: #38bdf8; --gold: #fbbf24; --red: #f87171; --teal: #2dd4bf; --shadow: rgba(0,0,0,0.3);
+}
+[data-theme="midnight"] {
+  --bg: #0f172a; --card: #1e293b; --ink: #f8fafc; --muted: #94a3b8; --line: #334155;
+  --green: #22c55e; --blue: #3b82f6; --gold: #eab308; --red: #ef4444; --teal: #06b6d4; --shadow: rgba(0,0,0,0.4);
+}
+[data-theme="emerald"] {
+  --bg: #ecfdf5; --card: #ffffff; --ink: #065f46; --muted: #047857; --line: #a7f3d0;
+  --green: #059669; --blue: #0d9488; --gold: #d97706; --red: #dc2626; --teal: #10b981; --shadow: rgba(5,150,105,0.1);
+}
+[data-theme="sunset"] {
+  --bg: #fff7ed; --card: #ffffff; --ink: #7c2d12; --muted: #9a3412; --line: #fed7aa;
+  --green: #16a34a; --blue: #0284c7; --gold: #d97706; --red: #e11d48; --teal: #f97316; --shadow: rgba(249,115,22,0.1);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;font-size:16px;transition:background 0.3s, color 0.3s}
+#app{display:flex;flex-direction:column;height:100%;max-width:560px;margin:0 auto;position:relative;background:var(--bg)}
+header{padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 10px;background:var(--teal);color:#fff;box-shadow:0 2px 8px var(--shadow);z-index:10}
+header h1{font-size:18px;margin:0;font-weight:600;text-align:center}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.header-title-box{display:flex;align-items:center;gap:8px}
+.app-brand{font-size:13px;font-weight:700;letter-spacing:0.3px;opacity:0.95}
+.vault-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;background:rgba(255,255,255,0.22);padding:2px 8px;border-radius:99px;cursor:pointer;white-space:nowrap;user-select:none;transition:background 0.2s}
+.vault-badge:hover{background:rgba(255,255,255,0.35)}
+.vault-dot{width:6px;height:6px;background:#34d399;border-radius:50%;box-shadow:0 0 5px rgba(52,211,153,0.9)}
+.header-actions{display:flex;gap:6px;align-items:center}
+.header-btn{background:rgba(255,255,255,0.25);border:0;color:#fff;border-radius:8px;padding:4px 8px;font-size:14px;cursor:pointer;transition:background 0.2s}
+.header-btn:hover{background:rgba(255,255,255,0.35)}
+.dnav{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dnav button{background:rgba(255,255,255,.22);border:0;color:#fff;border-radius:10px;padding:6px 14px;font-size:20px;cursor:pointer}
+.dnav .lbl{font-weight:600;text-align:center;flex:1;cursor:pointer}
+main{flex:1;overflow-y:auto;padding:12px 12px calc(env(safe-area-inset-bottom,0px) + 104px);-webkit-overflow-scrolling:touch}
+nav{display:flex;border-top:1px solid var(--line);background:var(--card);padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -2px 8px var(--shadow);z-index:10;position:relative}
+nav button{flex:1;min-width:0;border:0;background:none;padding:7px 2px 6px;color:var(--muted);font-size:11px;cursor:pointer;transition:color 0.2s;text-align:center;white-space:nowrap}
+nav button.on{color:var(--green);font-weight:600}
+nav i{display:block;font-style:normal;font-size:17px;line-height:1.2;margin-bottom:2px}
+
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px}
+.card{border-radius:14px;padding:10px;color:#fff;min-width:0;box-shadow:0 2px 6px rgba(0,0,0,0.08)}
+.card.c{background:linear-gradient(135deg,#3da873,var(--green))}
+.card.b{background:linear-gradient(135deg,#3a8fb0,var(--blue))}
+.card.s{background:linear-gradient(135deg,#d8a84a,var(--gold))}
+.card small{display:block;font-size:11px;opacity:.9;text-transform:uppercase;letter-spacing:.3px}
+.card b{display:block;font-size:13px;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.daily-sum{display:flex;justify-content:space-between;background:var(--card);padding:10px 14px;border-radius:10px;margin:6px 0 10px;font-size:13px;border:1px solid var(--line);box-shadow:0 1px 3px var(--shadow)}
+.daily-sum span b{font-weight:600}
+.hint{font-size:13px;color:var(--muted);margin:4px 2px 10px}
+.search-box{width:100%;margin-bottom:10px;display:flex;gap:6px}
+.search-box input{margin-bottom:0;padding:8px 12px;font-size:14px}
+.preset-bar{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px;scrollbar-width:none}
+.preset-bar::-webkit-scrollbar{display:none}
+.preset-pill{background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:20px;font-size:12px;white-space:nowrap;cursor:pointer;flex-shrink:0;color:var(--ink);box-shadow:0 1px 2px var(--shadow)}
+
+.item{background:var(--card);border-radius:14px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 3px var(--shadow);cursor:pointer;border:1px solid var(--line);transition:background 0.15s}
+.item:active{background:var(--bg)}
+.ico{width:40px;height:40px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;border:1px solid var(--line)}
+.item .mid{flex:1;min-width:0}
+.item .t{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .n{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;color:#fff;margin-top:4px}
+.tag.cash{background:var(--green)}.tag.benefit{background:var(--blue)}.tag.savings{background:var(--gold)}
+.amt{font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.neg{color:var(--red)}.pos{color:var(--green)}.mv{color:var(--muted)}
+.x{background:none;border:0;color:var(--muted);font-size:18px;padding:4px 6px;cursor:pointer}
+
+/* Receipt Thumbnail in Transaction item */
+.receipt-thumb{width:38px;height:38px;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--bg);flex-shrink:0;cursor:pointer;position:relative;box-shadow:0 1px 2px var(--shadow);transition:transform 0.15s ease}
+.receipt-thumb:active{transform:scale(0.92)}
+.receipt-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.receipt-thumb::after{content:'🔍';position:absolute;bottom:0;right:0;font-size:8px;background:rgba(0,0,0,0.5);color:#fff;padding:1px 2px;border-top-left-radius:4px;line-height:1}
+
+.fab{position:fixed;right:max(16px,calc(50% - 264px));bottom:calc(env(safe-area-inset-bottom,0px) + 76px);width:56px;height:56px;border-radius:50%;border:0;background:var(--green);color:#fff;font-size:28px;box-shadow:0 4px 14px rgba(0,0,0,0.25);z-index:20;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.15s ease, background 0.2s}
+.fab:active{transform:scale(0.92)}
+.panel{background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 1px 3px var(--shadow);border:1px solid var(--line)}
+.row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;gap:8px}
+.h{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin:14px 2px 6px}
+.bar{height:8px;border-radius:99px;background:var(--bg);overflow:hidden;margin-top:6px;border:1px solid var(--line)}
+.bar i{display:block;height:100%;background:var(--green);transition:width 0.3s}
+.bar i.warn{background:var(--yellow)}
+.bar i.danger{background:var(--red)}
+.mnav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:12px;font-weight:600}
+.mnav button{background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:6px 14px;font-size:18px;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}
+.chip{border:1px solid var(--line);background:var(--bg);border-radius:99px;padding:8px 12px;font-size:14px;color:var(--ink);cursor:pointer}
+.chip.on{background:var(--green);border-color:var(--green);color:#fff}
+.seg{display:flex;background:var(--bg);border-radius:12px;padding:3px;margin-bottom:12px;border:1px solid var(--line)}
+.seg button{flex:1;border:0;background:none;padding:9px;border-radius:99px;color:var(--muted);font-size:14px;cursor:pointer}
+.seg button.on{background:var(--card);color:var(--ink);font-weight:600;box-shadow:0 1px 3px var(--shadow)}
+input,select{width:100%;font-size:16px;padding:11px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);margin-bottom:10px}
+input.big{font-size:28px;font-weight:600;text-align:center}
+label{font-size:13px;color:var(--muted);display:block;margin:4px 0}
+.btn{width:100%;border:0;border-radius:12px;padding:13px;background:var(--green);color:#fff;font-size:16px;font-weight:600;display:block;text-align:center;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.1);transition:opacity 0.2s}
+.btn:active{opacity:0.9}
+.btn.ghost{background:var(--bg);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.btn.danger{background:var(--red)}
+.btn-sm{width:auto;padding:6px 12px;font-size:13px;border-radius:8px;box-shadow:none}
+.empty{text-align:center;color:var(--muted);padding:30px 10px;line-height:1.5}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .25s;z-index:30}
+.scrim.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;margin:0 auto;max-width:560px;background:var(--card);border-radius:24px 24px 0 0;padding:16px 18px calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateY(100%);visibility:hidden;transition:transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1), visibility 0.3s;max-height:90vh;overflow-y:auto;box-shadow:0 -10px 30px rgba(0,0,0,0.25);z-index:40;border-top:1px solid var(--line);-webkit-overflow-scrolling:touch}
+.sheet.open{transform:translateY(0);visibility:visible}
+.sheetTop{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.sheetTop b{font-size:18px}
+.sheetTop button{background:none;border:0;font-size:24px;color:var(--muted);cursor:pointer;padding:4px}
+.hint2{font-size:13px;color:var(--muted);margin:-4px 0 10px;min-height:16px}
+.alert-banner{background:rgba(217,119,6,0.15);color:var(--gold);border:1px solid var(--gold);padding:10px;border-radius:10px;margin-bottom:10px;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+
+/* Receipt Upload Box inside Form (Uses Native <label> for 100% Mobile Reliability) */
+.receipt-section{margin-bottom:12px}
+.receipt-upload-box{border:1.5px dashed var(--line);border-radius:12px;padding:12px;text-align:center;background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:border-color 0.2s}
+.receipt-upload-box:hover{border-color:var(--teal)}
+.receipt-upload-box .up-ico{font-size:22px}
+.receipt-upload-box .up-txt b{display:block;font-size:13px;color:var(--ink)}
+.receipt-upload-box .up-txt small{font-size:11px;color:var(--muted)}
+.receipt-preview-row{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--line);padding:8px 12px;border-radius:12px}
+.receipt-preview-row img{width:48px;height:48px;border-radius:8px;object-fit:cover;border:1px solid var(--line);cursor:pointer}
+.receipt-preview-info{flex:1;min-width:0}
+.receipt-preview-info b{font-size:13px;display:block}
+.receipt-preview-btns{display:flex;gap:6px;margin-top:4px}
+
+.mini-cal{background:var(--card);border-radius:14px;padding:12px;margin-bottom:12px;border:1px solid var(--line);box-shadow:0 1px 3px var(--shadow)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center;margin-top:8px}
+.cal-hdr{font-size:11px;color:var(--muted);font-weight:600;padding-bottom:4px}
+.cal-day{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:8px;font-size:13px;cursor:pointer;position:relative;background:var(--bg);border:1px solid var(--line)}
+.cal-day.has-tx{font-weight:600;border-color:var(--green)}
+.cal-day.today{border-color:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+.cal-day.selected{background:var(--green);color:#fff}
+.cal-dot{width:4px;height:4px;background:var(--green);border-radius:50%;position:absolute;bottom:3px}
+.cal-day.selected .cal-dot{background:#fff}
+
+.custom-modal{position:fixed;inset:0;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;z-index:100;opacity:0;pointer-events:none;transition:opacity 0.2s}
+.custom-modal.open{opacity:1;pointer-events:auto}
+.modal-content{background:var(--card);width:90%;max-width:380px;border-radius:16px;padding:20px;border:1px solid var(--line);box-shadow:0 10px 25px rgba(0,0,0,0.25)}
+.modal-title{font-size:18px;font-weight:600;margin-bottom:8px}
+.modal-body{font-size:14px;color:var(--muted);margin-bottom:16px;line-height:1.45}
+.modal-btns{display:flex;gap:10px}
+
+/* Full Receipt Modal */
+.receipt-modal-card{width:92%;max-width:440px;max-height:88vh;display:flex;flex-direction:column;padding:16px;background:var(--card);border-radius:18px;border:1px solid var(--line);box-shadow:0 12px 32px rgba(0,0,0,0.3)}
+.receipt-modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.receipt-modal-body{flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;min-height:180px;max-height:60vh;background:var(--bg);border-radius:12px;padding:6px;border:1px solid var(--line)}
+.receipt-modal-body img{max-width:100%;max-height:56vh;object-fit:contain;border-radius:8px}
+.receipt-modal-foot{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+
+/* PIN Lock Screen Overlay */
+.pin-overlay{position:fixed;inset:0;background:var(--bg);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center}
+.pin-dots{display:flex;gap:14px;margin:24px 0 32px}
+.pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--teal);transition:background 0.2s}
+.pin-dot.filled{background:var(--teal)}
+.pin-pad{display:grid;grid-template-columns:repeat(3,76px);gap:16px}
+.pin-key{width:76px;height:76px;border-radius:50%;border:1px solid var(--line);background:var(--card);font-size:24px;font-weight:600;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px var(--shadow)}
+.pin-key:active{background:var(--line)}
+
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:10px 20px;border-radius:30px;font-size:14px;z-index:200;opacity:0;pointer-events:none;transition:all 0.3s;box-shadow:0 4px 12px rgba(0,0,0,0.25);white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header id="top"></header>
+  <main id="main"></main>
+  <nav id="nav"></nav>
+  <button class="fab" id="fab" data-a="add" aria-label="Add entry">+</button>
+  <div class="scrim" id="scrim" data-a="close"></div>
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<div class="custom-modal" id="cModal">
+  <div class="modal-content">
+    <div class="modal-title" id="mTitle">Confirm</div>
+    <div class="modal-body" id="mBody">Are you sure?</div>
+    <div class="modal-btns">
+      <button class="btn ghost" id="mCancel">Cancel</button>
+      <button class="btn" id="mOk">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Full Receipt Image Viewer Modal -->
+<div class="custom-modal" id="receiptModal">
+  <div class="receipt-modal-card">
+    <div class="receipt-modal-head">
+      <div>
+        <b id="rTitle" style="font-size:16px;display:block">Receipt Attachment</b>
+        <span id="rMeta" style="font-size:12px;color:var(--muted)"></span>
+      </div>
+      <button class="x" data-a="closeReceiptModal" aria-label="Close">✕</button>
+    </div>
+    <div class="receipt-modal-body">
+      <img id="rImg" src="" alt="Receipt View">
+    </div>
+    <div class="receipt-modal-foot">
+      <button class="btn ghost btn-sm" id="rShare" data-a="shareReceipt">📲 Share Image</button>
+      <button class="btn ghost btn-sm" id="rDownload" data-a="downloadReceipt">📥 Download</button>
+      <button class="btn btn-sm" style="flex:1" data-a="closeReceiptModal">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- Optional Privacy PIN Lock Screen -->
+<div class="pin-overlay" id="pinLockScreen" style="display:none">
+  <div style="font-size:40px;margin-bottom:8px">🔒</div>
+  <h2 style="margin:0 0 4px;font-size:22px">Budget Pro Locked</h2>
+  <div style="font-size:13px;color:var(--muted)">Enter your 4-digit PIN to access vault</div>
+  <div class="pin-dots">
+    <div class="pin-dot" id="pdot0"></div>
+    <div class="pin-dot" id="pdot1"></div>
+    <div class="pin-dot" id="pdot2"></div>
+    <div class="pin-dot" id="pdot3"></div>
+  </div>
+  <div class="pin-pad">
+    <button class="pin-key" data-pk="1">1</button>
+    <button class="pin-key" data-pk="2">2</button>
+    <button class="pin-key" data-pk="3">3</button>
+    <button class="pin-key" data-pk="4">4</button>
+    <button class="pin-key" data-pk="5">5</button>
+    <button class="pin-key" data-pk="6">6</button>
+    <button class="pin-key" data-pk="7">7</button>
+    <button class="pin-key" data-pk="8">8</button>
+    <button class="pin-key" data-pk="9">9</button>
+    <button class="pin-key" data-pk="clear" style="font-size:15px">Clear</button>
+    <button class="pin-key" data-pk="0">0</button>
+    <button class="pin-key" data-pk="del" style="font-size:20px">⌫</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ==========================================
+// 1. Storage & Local-First IndexedDB Engine
+// ==========================================
+const KEY = 'budget-pro-v3';
+const DB_NAME = 'BudgetProVaultDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'vault';
+const VAULT_KEY = 'active_vault';
+const ACCTS = ['cash','benefit','savings'];
+const PERSON_TYPES = {
+  lent:     ['Lent (they owe you)', 1],
+  borrowed: ['Borrowed (you owe)', -1],
+  received: ['They paid you back', -1],
+  paid:     ['You paid them back', 1]
+};
+const ICONS = ['🍔','🛒','🛍️','🚗','📄','🎁','💰','🏠','💊','🎓','📦','💵','⚡','☕','🎮','👕','✈️','🎉','🏋️','📱'];
+
+// Accurate financial milli-unit calculations to prevent floating point rounding errors
+const toMilli = n => Math.round((Number(n) || 0) * 1000);
+const fromMilli = m => m / 1000;
+const round3 = n => Math.round((Number(n) || 0) * 1000) / 1000;
+const add3 = (a, b) => (toMilli(a) + toMilli(b)) / 1000;
+const sub3 = (a, b) => (toMilli(a) - toMilli(b)) / 1000;
+
+const pad = n => String(n).padStart(2,'0');
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today = () => ymd(new Date());
+const shiftDay = (s,n) => { const d = new Date(s+'T00:00:00'); d.setDate(d.getDate()+n); return ymd(d); };
+const shiftMonth = (m,n) => { const [y,mo] = m.split('-').map(Number); const d = new Date(y,mo-1+n,1); return `${d.getFullYear()}-${pad(d.getMonth()+1)}`; };
+const prettyDate = s => new Date(s+'T00:00:00').toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+const prettyMonth = m => { const [y,mo] = m.split('-').map(Number); return new Date(y,mo-1,1).toLocaleDateString(undefined,{month:'long',year:'numeric'}); };
+
+function getCurr(){ return (data.settings && data.settings.currency) || 'BHD'; }
+function getDec(){ return (data.settings && data.settings.decimals !== undefined) ? data.settings.decimals : 3; }
+
+function mask(str){ return S.stealth ? `${getCurr()} ***.***` : str; }
+const money = n => {
+  const dec = getDec();
+  const factor = Math.pow(10, dec);
+  const v = Math.round((Number(n)||0) * factor) / factor;
+  const cleanV = Math.abs(v) < (0.5 / factor) ? 0 : v;
+  return mask(getCurr() + ' ' + cleanV.toFixed(dec));
+};
+const num = n => {
+  const dec = getDec();
+  const factor = Math.pow(10, dec);
+  const v = Math.round((Number(n)||0) * factor) / factor;
+  const cleanV = Math.abs(v) < (0.5 / factor) ? 0 : v;
+  return mask(cleanV.toFixed(dec));
+};
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+
+function formatRelativeTime(iso){
+  if(!iso) return 'Vault ready';
+  const diff = Date.now() - new Date(iso).getTime();
+  if(diff < 60000) return 'Saved just now';
+  if(diff < 3600000) return `Saved ${Math.floor(diff/60000)}m ago`;
+  const d = new Date(iso);
+  const timeStr = d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  if(ymd(d) === today()) return `Saved today ${timeStr}`;
+  return `Saved ${d.toLocaleDateString([], {month:'short', day:'numeric'})} ${timeStr}`;
+}
+
+function formatFullDate(iso){
+  if(!iso) return 'No modifications recorded';
+  const d = new Date(iso);
+  return d.toLocaleString([], {weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  if(!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function askModal(title, body, cb){
+  const m = document.getElementById('cModal');
+  document.getElementById('mTitle').textContent = title;
+  document.getElementById('mBody').innerHTML = `<div id="mText">${esc(body).replace(/\n/g,'<br>')}</div>`;
+  m.classList.add('open');
+  const ok = document.getElementById('mOk');
+  const cancel = document.getElementById('mCancel');
+  
+  const clean = () => {
+    m.classList.remove('open');
+    ok.replaceWith(ok.cloneNode(true));
+    cancel.replaceWith(cancel.cloneNode(true));
+  };
+  document.getElementById('mOk').onclick = () => { clean(); cb(); };
+  document.getElementById('mCancel').onclick = () => { clean(); };
+}
+
+function askPrompt(title, label, initialVal, cb){
+  const m = document.getElementById('cModal');
+  document.getElementById('mTitle').textContent = title;
+  document.getElementById('mBody').innerHTML = `
+    <div id="mText" style="margin-bottom:8px">${esc(label)}</div>
+    <input type="text" id="mInput" value="${esc(initialVal)}" style="margin-bottom:0;font-size:18px;padding:10px">
+  `;
+  m.classList.add('open');
+  const inp = document.getElementById('mInput');
+  setTimeout(() => { if(inp){ inp.focus(); inp.select(); } }, 50);
+
+  const ok = document.getElementById('mOk');
+  const cancel = document.getElementById('mCancel');
+  const clean = () => {
+    m.classList.remove('open');
+    ok.replaceWith(ok.cloneNode(true));
+    cancel.replaceWith(cancel.cloneNode(true));
+  };
+  document.getElementById('mOk').onclick = () => {
+    const val = inp ? inp.value : '';
+    clean();
+    cb(val);
+  };
+  document.getElementById('mCancel').onclick = () => { clean(); cb(null); };
+}
+
+// ------------------------------------------
+// IndexedDB Vault Helper
+// ------------------------------------------
+function openVaultDB(){
+  return new Promise(resolve => {
+    if(!window.indexedDB){ resolve(null); return; }
+    try{
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = e => {
+        const db = e.target.result;
+        if(!db.objectStoreNames.contains(STORE_NAME)){
+          db.createObjectStore(STORE_NAME);
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => resolve(null);
+    }catch(e){ resolve(null); }
+  });
+}
+
+async function idbGet(key){
+  try{
+    const db = await openVaultDB();
+    if(!db) return null;
+    return new Promise(resolve => {
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const req = tx.objectStore(STORE_NAME).get(key);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => resolve(null);
+    });
+  }catch(e){ return null; }
+}
+
+async function idbSet(key, value){
+  try{
+    const db = await openVaultDB();
+    if(!db) return false;
+    return new Promise(resolve => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const req = tx.objectStore(STORE_NAME).put(value, key);
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => resolve(false);
+    });
+  }catch(e){ return false; }
+}
+
+function blank(){
+  return {
+    opening: {cash:0, benefit:0, savings:0},
+    categories: {
+      expense: [
+        {name:'Food',icon:'🍔',limit:0},{name:'Groceries',icon:'🛒',limit:0},{name:'Shopping',icon:'🛍️',limit:0},
+        {name:'Transport',icon:'🚗',limit:0},{name:'Bills',icon:'📄',limit:0},{name:'Other',icon:'📦',limit:0}
+      ],
+      income: [{name:'Allowance',icon:'💰',limit:0},{name:'Gift',icon:'🎁',limit:0},{name:'Other',icon:'💵',limit:0}]
+    },
+    tx: [],
+    people: [],
+    budgets: {},
+    goals: [],
+    presets: [
+      {id:uid(), name:'☕ Coffee', amount:0.500, kind:'expense', category:'Food', account:'cash'},
+      {id:uid(), name:'⛽ Fuel', amount:5.000, kind:'expense', category:'Transport', account:'benefit'},
+      {id:uid(), name:'🥪 Lunch', amount:1.500, kind:'expense', category:'Food', account:'cash'}
+    ],
+    settings: {
+      theme:'teal',
+      stealth:false,
+      currency:'BHD',
+      decimals:3,
+      pin:null
+    },
+    lastExport: null,
+    lastModified: new Date().toISOString()
+  };
+}
+
+function loadSync(){
+  try{
+    const d = JSON.parse(localStorage.getItem(KEY));
+    if(d && Array.isArray(d.tx)) return {...blank(), ...d, settings: {...blank().settings, ...(d.settings||{})}};
+  }catch(e){}
+  return blank();
+}
+
+let data = loadSync();
+
+// Asynchronously sync with IndexedDB vault
+async function initVaultStorage(){
+  try{
+    // Request persistent storage from browser to prevent eviction
+    if(navigator.storage && navigator.storage.persist){
+      navigator.storage.persist().catch(()=>{});
+    }
+
+    const idbData = await idbGet(VAULT_KEY);
+    if(idbData && Array.isArray(idbData.tx)){
+      const localTime = new Date(data.lastModified || 0).getTime();
+      const idbTime = new Date(idbData.lastModified || 0).getTime();
+      if(idbTime >= localTime){
+        data = {...blank(), ...idbData, settings: {...blank().settings, ...(idbData.settings||{})}};
+        document.documentElement.setAttribute('data-theme', data.settings.theme || 'teal');
+        render();
+      }
+    } else {
+      await idbSet(VAULT_KEY, data);
+    }
+  }catch(e){
+    console.warn('IDB init error:', e);
+  }
+}
+initVaultStorage();
+
+function save(touchTimestamp = true){
+  if(touchTimestamp){
+    data.lastModified = new Date().toISOString();
+  }
+  idbSet(VAULT_KEY, data);
+  try{
+    localStorage.setItem(KEY, JSON.stringify(data));
+  }catch(e){
+    console.warn('LocalStorage quota limit reached; vault safely preserved in IndexedDB.', e);
+  }
+}
+
+document.documentElement.setAttribute('data-theme', data.settings.theme || 'teal');
+
+// Accurate balance calculations
+function balancesAt(date){
+  const b = {
+    cash: toMilli(data.opening.cash),
+    benefit: toMilli(data.opening.benefit),
+    savings: toMilli(data.opening.savings)
+  };
+  for(const t of data.tx){
+    if(t.date > date) continue;
+    const amt = toMilli(t.amount);
+    if(t.kind === 'expense') b[t.account] -= amt;
+    else if(t.kind === 'income') b[t.account] += amt;
+    else { b[t.from] -= amt; b[t.to] += amt; }
+  }
+  return {
+    cash: b.cash / 1000,
+    benefit: b.benefit / 1000,
+    savings: b.savings / 1000
+  };
+}
+
+function iconFor(kind, name){
+  const list = kind === 'income' ? data.categories.income : data.categories.expense;
+  const c = list.find(x => x.name === name);
+  return c ? c.icon : '•';
+}
+function defaultCat(kind){
+  const list = kind === 'income' ? data.categories.income : data.categories.expense;
+  return list[0] ? list[0].name : '';
+}
+function moveLabel(f,t){
+  const names = {
+    'cash>benefit':'Cash → Benefit (C2B)',
+    'benefit>cash':'Benefit → Cash (B2C)',
+    'benefit>savings':'Saved from Benefit',
+    'savings>benefit':'Took from Savings'
+  };
+  return names[f+'>'+t] || `${cap(f)} → ${cap(t)}`;
+}
+function balRows(b){
+  return ACCTS.map(a => `<div class="row"><span>${cap(a)}</span><span class="amt">${money(b[a])}</span></div>`).join('');
+}
+
+// ------------------------------------------
+// 2. Image Compression Helper (Offscreen Canvas)
+// ------------------------------------------
+function compressImage(file, maxDimension = 1200, quality = 0.78){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const img = new Image();
+      img.onload = () => {
+        let {width, height} = img;
+        if(width > maxDimension || height > maxDimension){
+          if(width > height){
+            height = Math.round((height * maxDimension) / width);
+            width = maxDimension;
+          } else {
+            width = Math.round((width * maxDimension) / height);
+            height = maxDimension;
+          }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(img, 0, 0, width, height);
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve(dataUrl);
+      };
+      img.onerror = () => reject(new Error('Image decode failed'));
+      img.src = ev.target.result;
+    };
+    reader.onerror = () => reject(new Error('File reading failed'));
+    reader.readAsDataURL(file);
+  });
+}
+
+// ------------------------------------------
+// 3. UI State & Views
+// ------------------------------------------
+const S = {
+  view: 'day',
+  date: today(),
+  month: today().slice(0,7),
+  year: new Date().getFullYear(),
+  personOpen: null,
+  sheet: false,
+  form: null,
+  editId: null,
+  searchQuery: '',
+  searchTag: '',
+  minAmt: '',
+  maxAmt: '',
+  stealth: data.settings.stealth || false,
+  activeReceipt: null,
+  activeReceiptMeta: null,
+  enteredPin: '',
+  isLocked: !!(data.settings && data.settings.pin)
+};
+
+function newForm(kind='expense'){
+  return {
+    kind,
+    account: 'cash',
+    category: defaultCat(kind),
+    from: 'cash',
+    to: 'benefit',
+    amount: '',
+    note: '',
+    date: S.date,
+    tags: '',
+    receipt: null
+  };
+}
+S.form = newForm();
+
+function topHTML(){
+  const stealthIcon = S.stealth ? '🙈' : '👁️';
+  let navHeader = '';
+  if(S.view === 'day'){
+    navHeader = `<div class="dnav"><button data-a="prev">‹</button><div class="lbl" data-a="today">${prettyDate(S.date)}</div><button data-a="next">›</button></div>`;
+  } else if(S.view === 'month'){
+    navHeader = `<h1>${prettyMonth(S.month)}</h1>`;
+  } else {
+    const t = {year:'Annual Ledger & Flow', people:'Debt & Loans', goals:'Savings Goals', settings:'Settings & Vault'}[S.view];
+    navHeader = `<h1>${t}</h1>`;
+  }
+  const relTime = formatRelativeTime(data.lastModified);
+  return `
+    <div class="header-top">
+      <div class="header-title-box">
+        <span class="app-brand">Budget Pro</span>
+        <span class="vault-badge" data-a="showVaultStatus" title="Local Vault: Stored locally on device (${formatFullDate(data.lastModified)})">
+          <i class="vault-dot"></i>
+          <span>${relTime}</span>
+        </span>
+      </div>
+      <div class="header-actions">
+        <button class="header-btn" data-a="toggleStealth" title="Toggle Stealth Mode">${stealthIcon}</button>
+        <button class="header-btn" data-a="cycleTheme" title="Change Theme">🎨 ${cap(data.settings.theme||'teal')}</button>
+      </div>
+    </div>
+    ${navHeader}`;
+}
+
+function txItem(t){
+  const receiptThumb = t.receipt ? `
+    <div class="receipt-thumb" data-a="viewReceipt" data-id="${t.id}" title="Tap to view attached receipt">
+      <img src="${t.receipt}" alt="Receipt">
+    </div>` : '';
+
+  if(t.kind === 'move'){
+    return `<div class="item" data-a="editTx" data-id="${t.id}">
+      <div class="ico">⇄</div>
+      <div class="mid">
+        <div class="t">${esc(moveLabel(t.from,t.to))}</div>
+        <div class="n">${esc(t.note)}</div>
+        ${t.tags ? `<span class="tag savings">#${esc(t.tags)}</span>`:''}
+      </div>
+      ${receiptThumb}
+      <div class="amt mv">${num(t.amount)}</div>
+      <button class="x" data-a="del" data-id="${t.id}" aria-label="Delete">✕</button>
+    </div>`;
+  }
+  const sign = t.kind === 'expense' ? '−' : '+';
+  const cls = t.kind === 'expense' ? 'neg' : 'pos';
+  return `<div class="item" data-a="editTx" data-id="${t.id}">
+    <div class="ico">${t.icon || iconFor(t.kind,t.category)}</div>
+    <div class="mid">
+      <div class="t">${esc(t.category)}</div>
+      <div class="n">${esc(t.note)}</div>
+      <div>
+        <span class="tag ${t.account}">${cap(t.account)}</span>
+        ${t.tags ? `<span class="tag savings" style="background:var(--teal)">#${esc(t.tags)}</span>`:''}
+      </div>
+    </div>
+    ${receiptThumb}
+    <div class="amt ${cls}">${sign}${num(t.amount)}</div>
+    <button class="x" data-a="del" data-id="${t.id}" aria-label="Delete">✕</button>
+  </div>`;
+}
+
+function dayHTML(){
+  const b = balancesAt(S.date);
+  let list = data.tx.filter(t => t.date === S.date);
+  
+  if(S.searchQuery.trim()){
+    const q = S.searchQuery.toLowerCase();
+    list = list.filter(t => (t.note && t.note.toLowerCase().includes(q)) || (t.category && t.category.toLowerCase().includes(q)) || String(t.amount).includes(q) || (t.tags && t.tags.toLowerCase().includes(q)));
+  }
+  if(S.minAmt !== '') list = list.filter(t => t.amount >= Number(S.minAmt));
+  if(S.maxAmt !== '') list = list.filter(t => t.amount <= Number(S.maxAmt));
+
+  let dayExp = 0, dayInc = 0;
+  for(const t of list){
+    if(t.kind === 'expense') dayExp = add3(dayExp, t.amount);
+    else if(t.kind === 'income') dayInc = add3(dayInc, t.amount);
+  }
+
+  let backupBanner = '';
+  const sevenDays = 7 * 24 * 60 * 60 * 1000;
+  if(!data.lastExport || (Date.now() - new Date(data.lastExport).getTime() > sevenDays)){
+    backupBanner = `<div class="alert-banner"><span>Reminder: Save a local vault backup in Settings.</span><button class="x" data-a="goToSettings">Vault</button></div>`;
+  }
+
+  const cards = `<div class="cards">
+    <div class="card c"><small>Cash</small><b>${money(b.cash)}</b></div>
+    <div class="card b"><small>Benefit</small><b>${money(b.benefit)}</b></div>
+    <div class="card s"><small>Savings</small><b>${money(b.savings)}</b></div>
+  </div>
+  <div class="daily-sum">
+    <span>Spent: <b class="neg">${money(dayExp)}</b></span>
+    <span>Income: <b class="pos">${money(dayInc)}</b></span>
+  </div>`;
+
+  const presetsBar = data.presets.length ? `
+    <div class="preset-bar">
+      <span style="font-size:12px;color:var(--muted);align-self:center;white-space:nowrap">Quick:</span>
+      ${data.presets.map(p => `<button class="preset-pill" data-a="usePreset" data-id="${p.id}">${esc(p.name)} (${num(p.amount)})</button>`).join('')}
+    </div>` : '';
+
+  const searchBox = `
+    <div class="search-box">
+      <input type="text" id="s-query" placeholder="Search note, category, #tag..." value="${esc(S.searchQuery)}">
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:10px">
+      <input type="number" id="s-min" placeholder="Min" value="${esc(S.minAmt)}" style="margin-bottom:0;padding:6px 10px;font-size:13px">
+      <input type="number" id="s-max" placeholder="Max" value="${esc(S.maxAmt)}" style="margin-bottom:0;padding:6px 10px;font-size:13px">
+      ${(S.searchQuery || S.minAmt || S.maxAmt) ? `<button class="btn ghost" data-a="clearSearch" style="width:auto;padding:6px 12px;font-size:13px">Reset</button>` : ''}
+    </div>`;
+
+  const items = list.length
+    ? list.map(txItem).join('')
+    : `<div class="empty">No entries found for this day.<br>Tap + below to add one.</div>`;
+  return backupBanner + cards + presetsBar + searchBox + items;
+}
+
+function monthHTML(){
+  const m = S.month;
+  const [y,mo] = m.split('-').map(Number);
+  
+  const firstDayIndex = new Date(y, mo-1, 1).getDay();
+  const totalDays = new Date(y, mo, 0).getDate();
+  let calCells = '';
+  ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d => calCells += `<div class="cal-hdr">${d}</div>`);
+  for(let i=0; i<firstDayIndex; i++) calCells += `<div></div>`;
+  for(let day=1; day<=totalDays; day++){
+    const dStr = `${y}-${pad(mo)}-${pad(day)}`;
+    const hasTx = data.tx.some(t => t.date === dStr);
+    const isToday = dStr === today();
+    const isSel = dStr === S.date;
+    calCells += `<div class="cal-day ${hasTx?'has-tx':''} ${isToday?'today':''} ${isSel?'selected':''}" data-a="jumpDay" data-date="${dStr}">${day}${hasTx?'<i class="cal-dot"></i>':''}</div>`;
+  }
+  const miniCal = `
+    <div class="mini-cal">
+      <div class="mnav" style="margin-bottom:6px">
+        <button data-a="mprev">‹</button>
+        <div style="cursor:pointer" data-a="jumpMonthDay">${prettyMonth(m)}</div>
+        <button data-a="mnext">›</button>
+      </div>
+      <div class="cal-grid">${calCells}</div>
+    </div>`;
+
+  const txs = data.tx.filter(t => t.date.startsWith(m));
+  let incCash = 0, incBen = 0, expCash = 0, expBen = 0, movesTotal = 0;
+  const catExp = {};
+  for(const t of txs){
+    if(t.kind === 'income'){
+      if(t.account === 'cash') incCash = add3(incCash, t.amount);
+      else if(t.account === 'benefit') incBen = add3(incBen, t.amount);
+    } else if(t.kind === 'expense'){
+      if(t.account === 'cash') expCash = add3(expCash, t.amount);
+      else if(t.account === 'benefit') expBen = add3(expBen, t.amount);
+      catExp[t.category] = add3(catExp[t.category] || 0, t.amount);
+    } else if(t.kind === 'move'){
+      movesTotal = add3(movesTotal, t.amount);
+    }
+  }
+  const totalInc = add3(incCash, incBen);
+  const totalExp = add3(expCash, expBen);
+  const net = sub3(totalInc, totalExp);
+
+  const monthlyBudget = round3(data.budgets[m] || 0);
+  let pacingHTML = '';
+  if(monthlyBudget > 0){
+    const remainingBudget = sub3(monthlyBudget, totalExp);
+    const nowD = new Date();
+    const isCurrentMonth = nowD.getFullYear() === y && (nowD.getMonth()+1) === mo;
+    const daysInMonth = totalDays;
+    const daysPassed = isCurrentMonth ? nowD.getDate() : (m < today().slice(0,7) ? daysInMonth : 0);
+    const daysRemaining = Math.max(1, daysInMonth - daysPassed);
+    const dailyPace = remainingBudget > 0 ? round3(remainingBudget / daysRemaining) : 0;
+    const rawPct = (totalExp / monthlyBudget) * 100;
+    const budgetPct = Math.min(100, Math.max(0, rawPct));
+    const bColor = rawPct > 100 ? 'danger' : (rawPct > 80 ? 'warn' : '');
+
+    pacingHTML = `
+      <div class="panel">
+        <div class="row"><b>Monthly Budget Limit</b><span class="amt" style="cursor:pointer;color:var(--blue)" data-a="editBudget" data-m="${m}">${money(monthlyBudget)}</span></div>
+        <div class="row" style="font-size:13px"><span>Spent: ${money(totalExp)}</span><span>Remaining: ${money(remainingBudget)}</span></div>
+        <div class="bar"><i class="${bColor}" style="width:${budgetPct}%"></i></div>
+        <div class="row" style="font-size:12px;color:var(--muted);margin-top:6px"><span>Recommended Daily Pace:</span><b class="amt">${money(dailyPace)} / day (${daysRemaining} days left)</b></div>
+      </div>`;
+  } else {
+    pacingHTML = `<div class="panel" style="display:flex;justify-content:space-between;align-items:center"><span>No monthly budget set.</span><button class="btn ghost" data-a="editBudget" data-m="${m}" style="width:auto;padding:6px 12px;font-size:13px">Set Budget</button></div>`;
+  }
+
+  // Top spending visual breakdown
+  const catEntries = Object.entries(catExp).sort((a,b) => b[1] - a[1]);
+  let breakdownBars = '';
+  if(totalExp > 0 && catEntries.length > 0){
+    breakdownBars = `
+    <div class="h">Monthly Spending Distribution</div>
+    <div class="panel">
+      ${catEntries.slice(0, 5).map(([name, amt]) => {
+        const pct = Math.min(100, Math.round((amt / totalExp) * 100));
+        return `<div style="margin-bottom:8px">
+          <div class="row" style="font-size:13px;padding:0"><span>${name}</span><b>${money(amt)} (${pct}%)</b></div>
+          <div class="bar"><i style="width:${pct}%"></i></div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }
+
+  const catLimitRows = data.categories.expense.map(c => {
+    const spent = catExp[c.name] || 0;
+    if(c.limit <= 0 && spent <= 0) return '';
+    const pct = c.limit > 0 ? Math.min(100, Math.max(0, (spent / c.limit) * 100)) : 0;
+    const cls = c.limit > 0 && spent > c.limit ? 'danger' : (c.limit > 0 && pct > 80 ? 'warn' : '');
+    return `<div style="margin-bottom:8px">
+      <div class="row" style="padding:0;font-size:13px"><span>${c.icon} ${esc(c.name)}</span><span class="amt">${money(spent)} ${c.limit?`/ ${money(c.limit)}`:''}</span></div>
+      ${c.limit > 0 ? `<div class="bar"><i class="${cls}" style="width:${pct}%"></i></div>`:''}
+    </div>`;
+  }).filter(Boolean).join('');
+
+  const endDay = ymd(new Date(y,mo,0));
+  const b = balancesAt(endDay);
+
+  return miniCal + pacingHTML + `
+  <div class="panel">
+    <div class="row"><b>Total Income</b><span class="amt pos">${money(totalInc)}</span></div>
+    <div class="row" style="font-size:12px;color:var(--muted)"><span>• Cash: ${money(incCash)}</span><span>• Benefit: ${money(incBen)}</span></div>
+    <div class="row" style="margin-top:6px"><b>Total Expenses</b><span class="amt neg">${money(totalExp)}</span></div>
+    <div class="row" style="font-size:12px;color:var(--muted)"><span>• Cash: ${money(expCash)}</span><span>• Benefit: ${money(expBen)}</span></div>
+    <div class="row" style="border-top:1px dashed var(--line);margin-top:6px;padding-top:6px"><b>Net Flow</b><b class="amt ${net>=0?'pos':'neg'}">${money(net)}</b></div>
+  </div>
+  <div class="panel">
+    <div class="row"><b>Internal Transfers (Moves)</b><span class="amt">${money(movesTotal)}</span></div>
+  </div>
+  ${breakdownBars}
+  ${catLimitRows ? `<div class="h">Category Budgets</div><div class="panel">${catLimitRows}</div>`:''}
+  <div class="h">Balances at month end</div>
+  <div class="panel">${balRows(b)}</div>`;
+}
+
+function yearHTML(){
+  const y = S.year;
+  let rows = '', tiCash = 0, tiBen = 0, teCash = 0, teBen = 0;
+  for(let mo = 1; mo <= 12; mo++){
+    const key = `${y}-${pad(mo)}`;
+    let iCash = 0, iBen = 0, eCash = 0, eBen = 0;
+    for(const t of data.tx){
+      if(!t.date.startsWith(key)) continue;
+      if(t.kind === 'income'){
+        if(t.account==='cash') iCash = add3(iCash, t.amount);
+        else if(t.account==='benefit') iBen = add3(iBen, t.amount);
+      } else if(t.kind === 'expense'){
+        if(t.account==='cash') eCash = add3(eCash, t.amount);
+        else if(t.account==='benefit') eBen = add3(eBen, t.amount);
+      }
+    }
+    tiCash = add3(tiCash, iCash);
+    tiBen = add3(tiBen, iBen);
+    teCash = add3(teCash, eCash);
+    teBen = add3(teBen, eBen);
+    const has = iCash || iBen || eCash || eBen;
+    const name = new Date(y,mo-1,1).toLocaleDateString(undefined,{month:'short'});
+    const totInc = add3(iCash, iBen);
+    const totExp = add3(eCash, eBen);
+    rows += `<div class="row" style="border-bottom:1px solid var(--line);cursor:pointer" data-a="jumpMonth" data-month="${key}">
+      <span style="flex:1;font-weight:600;color:var(--blue)">${name} ›</span>
+      <span class="amt pos" style="width:80px;text-align:right">${has ? num(totInc) : '–'}</span>
+      <span class="amt neg" style="width:80px;text-align:right">${has ? num(totExp) : '–'}</span>
+    </div>`;
+  }
+  const totalInc = add3(tiCash, tiBen);
+  const totalExp = add3(teCash, teBen);
+  const netFlow = sub3(totalInc, totalExp);
+  const b = balancesAt(ymd(new Date(y,11,31)));
+
+  return `
+  <div class="mnav"><button data-a="yprev">‹</button><div>${y}</div><button data-a="ynext">›</button></div>
+  <div class="panel">
+    <div class="h" style="margin-top:0">Annual Cash vs Benefit Breakdown</div>
+    <div class="row"><span>Total Income (Cash / Benefit)</span><span class="amt pos">${money(totalInc)}</span></div>
+    <div class="row" style="font-size:12px;color:var(--muted)"><span>• Cash: ${money(tiCash)}</span><span>• Benefit: ${money(tiBen)}</span></div>
+    <div class="row" style="margin-top:6px"><span>Total Expenses (Cash / Benefit)</span><span class="amt neg">${money(totalExp)}</span></div>
+    <div class="row" style="font-size:12px;color:var(--muted)"><span>• Cash: ${money(teCash)}</span><span>• Benefit: ${money(teBen)}</span></div>
+    <div class="row" style="border-top:1px dashed var(--line);margin-top:6px;padding-top:6px"><b>Annual Net Account Flow</b><b class="amt ${netFlow>=0?'pos':'neg'}">${money(netFlow)}</b></div>
+  </div>
+  <div class="panel">
+    <div class="h" style="margin-top:0">Monthly Ledger Summary (Tap month to view)</div>
+    <div class="row" style="font-size:12px;color:var(--muted)"><span style="flex:1">Month</span><span style="width:80px;text-align:right">Income</span><span style="width:80px;text-align:right">Spent</span></div>
+    ${rows}
+    <div class="row" style="margin-top:6px"><b style="flex:1">Total</b><b class="amt pos" style="width:80px;text-align:right">${num(totalInc)}</b><b class="amt neg" style="width:80px;text-align:right">${num(totalExp)}</b></div>
+  </div>
+  <div class="h">Balances at year end</div>
+  <div class="panel">${balRows(b)}</div>`;
+}
+
+function peopleHTML(){
+  const names = [...new Set(data.people.map(p => p.name))];
+  const form = `
+  <div class="panel">
+    <div class="h" style="margin-top:0">Add debt / loan entry</div>
+    <input id="p-name" list="pl" placeholder="Person's Name">
+    <datalist id="pl">${names.map(n => `<option value="${esc(n)}">`).join('')}</datalist>
+    <select id="p-type">${Object.entries(PERSON_TYPES).map(([k,[l]]) => `<option value="${k}">${l}</option>`).join('')}</select>
+    <input id="p-amt" type="number" inputmode="decimal" step="0.001" min="0" placeholder="Amount (${getCurr()})">
+    <label>Payment Due Date (optional)</label>
+    <input type="date" id="p-due" value="">
+    <input id="p-note" placeholder="Note (optional)">
+    <button class="btn" data-a="addPerson">Add debt entry</button>
+  </div>`;
+
+  const list = data.people.length ? data.people.map(p => {
+    const netMilli = p.lines.reduce((s,l) => s + PERSON_TYPES[l.type][1] * toMilli(l.amount), 0);
+    const net = fromMilli(netMilli);
+    const status = Math.abs(net) < 0.0005 ? 'Settled' : net > 0 ? `Owes you ${money(net)}` : `You owe ${money(-net)}`;
+    const cls = net > 0.0005 ? 'pos' : net < -0.0005 ? 'neg' : 'mv';
+    const open = S.personOpen === p.id;
+    
+    const lines = open ? p.lines.map(l => {
+      let dueBadge = '';
+      if(l.dueDate){
+        const diffDays = Math.ceil((new Date(l.dueDate+'T00:00:00') - new Date(today()+'T00:00:00')) / (1000*60*60*24));
+        if(diffDays < 0) dueBadge = `<span style="color:var(--red);font-weight:600">Overdue (${Math.abs(diffDays)}d ago)</span>`;
+        else if(diffDays === 0) dueBadge = `<span style="color:var(--gold);font-weight:600">Due Today</span>`;
+        else dueBadge = `<span style="color:var(--gold)">Due in ${diffDays} days</span>`;
+      }
+      return `
+      <div class="row" style="font-size:14px;border-bottom:1px solid var(--line);padding:6px 0">
+        <span>${PERSON_TYPES[l.type][0]}<br><small style="color:var(--muted)">${l.date} ${esc(l.note)} ${dueBadge}</small></span>
+        <span class="amt">${num(l.amount)} <button class="x" data-a="delLine" data-p="${p.id}" data-id="${l.id}" aria-label="Delete">✕</button></span>
+      </div>`;
+    }).join('') + `<button class="btn danger" style="margin-top:10px;padding:9px" data-a="delPerson" data-p="${p.id}">Delete ${esc(p.name)} profile</button>` : '';
+
+    return `<div class="item" style="flex-direction:column;align-items:stretch;cursor:pointer" data-a="person" data-id="${p.id}">
+      <div class="row"><div class="t">${esc(p.name)}</div><div class="amt ${cls}">${status}</div></div>${lines}</div>`;
+  }).join('') : '<div class="empty">No people added yet.</div>';
+  return form + list;
+}
+
+function goalsHTML(){
+  const form = `
+  <div class="panel">
+    <div class="h" style="margin-top:0">Create Savings Goal Bucket</div>
+    <input id="g-name" placeholder="Goal Name (e.g. New Laptop)">
+    <input id="g-target" type="number" inputmode="decimal" step="0.001" min="0" placeholder="Target Amount (${getCurr()})">
+    <button class="btn" data-a="addGoal">Create Bucket</button>
+  </div>`;
+
+  const savingsTotal = balancesAt(today()).savings;
+  const allocatedTotal = data.goals.reduce((sum, g) => sum + toMilli(g.allocated || 0), 0) / 1000;
+  const available = sub3(savingsTotal, allocatedTotal);
+  const allocPct = savingsTotal > 0 ? Math.min(100, Math.max(0, (allocatedTotal / savingsTotal) * 100)) : 0;
+  const summary = `
+  <div class="panel">
+    <div class="row"><b>Total Savings</b><span class="amt pos">${money(savingsTotal)}</span></div>
+    <div class="bar"><i class="warn" style="width:${allocPct}%"></i></div>
+    <div class="row" style="font-size:12px;color:var(--muted);margin-top:6px"><span>Allocated: ${money(allocatedTotal)}</span><span class="amt ${available < 0 ? 'neg' : ''}">Available: ${money(available)}</span></div>
+  </div>`;
+
+  const list = data.goals.length ? data.goals.map(g => {
+    const pct = g.target > 0 ? Math.min(100, Math.max(0, (g.allocated / g.target) * 100)) : 0;
+    return `<div class="panel">
+      <div class="row"><b>${esc(g.name)}</b><span class="amt">${money(g.allocated)} / ${money(g.target)}</span></div>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <div style="display:flex;gap:6px;margin-top:10px">
+        <button class="btn ghost" data-a="fundGoal" data-id="${g.id}" style="padding:8px;font-size:13px">+ Allocate</button>
+        <button class="btn ghost" data-a="withdrawGoal" data-id="${g.id}" style="padding:8px;font-size:13px">- Withdraw</button>
+        <button class="btn danger" data-a="delGoal" data-id="${g.id}" style="width:auto;padding:8px 12px;font-size:13px">✕</button>
+      </div>
+    </div>`;
+  }).join('') : '<div class="empty">No savings goal buckets created yet.</div>';
+
+  return summary + form + list;
+}
+
+function catList(kind){
+  return data.categories[kind].map((c,i) =>
+    `<div class="row"><span>${c.icon} ${esc(c.name)} ${c.limit?`(Limit: ${money(c.limit)})`:''}</span><button class="x" data-a="delCat" data-k="${kind}" data-i="${i}" aria-label="Delete">✕</button></div>`
+  ).join('');
+}
+
+function settingsHTML(){
+  const o = data.opening;
+  const receiptCount = data.tx.filter(t => !!t.receipt).length;
+  const pinStatus = data.settings.pin ? '🔒 Protected (Active)' : '🔓 None (Disabled)';
+  return `
+  <div class="h" style="margin-top:0">Local-First Vault & Storage</div>
+  <div class="panel">
+    <div class="row"><b>Vault Status</b><span style="color:var(--green);font-weight:600">● Local Active</span></div>
+    <div class="row" style="font-size:13px;color:var(--muted)"><span>Storage Engine</span><span>IndexedDB + LocalStorage</span></div>
+    <div class="row" style="font-size:13px;color:var(--muted)"><span>Last Modified</span><b>${formatFullDate(data.lastModified)}</b></div>
+    <div class="row" style="font-size:13px;color:var(--muted)"><span>Vault Contents</span><span>${data.tx.length} entries · ${receiptCount} receipts</span></div>
+    <div style="height:12px"></div>
+    <button class="btn" data-a="shareVaultFile">📲 Share / Send Vault Backup</button>
+    <div style="height:8px"></div>
+    <button class="btn ghost" data-a="saveVaultFile">💾 Save Vault to Disk (.json)</button>
+    <div style="height:8px"></div>
+    <button class="btn ghost" data-a="openVaultFile">📂 Open / Restore Vault File</button>
+    <input type="file" id="imp" accept="application/json,.json" style="display:none">
+    <div style="height:8px"></div>
+    <button class="btn ghost" data-a="exportCSV">📊 Export Spreadsheet Ledger (CSV)</button>
+    <div style="height:8px"></div>
+    <button class="btn danger" data-a="reset">Erase all data (Reset Vault)</button>
+  </div>
+
+  <div class="h">PWA Installation on Mobile</div>
+  <div class="panel">
+    <div class="row"><b>Install Standalone App</b><span style="font-size:13px;color:var(--green)">Offline Capable</span></div>
+    <div style="font-size:13px;color:var(--muted);margin:4px 0 10px">Install Budget Pro to your home screen so it runs full-screen with no browser address bar.</div>
+    <button class="btn" data-a="installAppPrompt">📲 Install / Add to Home Screen</button>
+  </div>
+
+  <div class="h">Security & App Lock</div>
+  <div class="panel">
+    <div class="row"><span>PIN Lock Protection</span><b>${pinStatus}</b></div>
+    <div style="font-size:13px;color:var(--muted);margin:4px 0 10px">Require a 4-digit PIN every time the app opens or switches to foreground.</div>
+    <button class="btn ghost" data-a="togglePinLock">${data.settings.pin ? 'Change or Disable PIN' : 'Enable 4-Digit PIN Lock'}</button>
+  </div>
+
+  <div class="h">Currency & Formatting</div>
+  <div class="panel">
+    <label>Currency Code / Symbol</label>
+    <div class="chips">
+      ${['BHD','USD','EUR','GBP','SAR','AED','KWD'].map(c => `<button class="chip ${getCurr()===c?'on':''}" data-a="setCurrency" data-curr="${c}">${c}</button>`).join('')}
+    </div>
+    <label>Decimal Places</label>
+    <div class="chips">
+      ${[2,3].map(d => `<button class="chip ${getDec()===d?'on':''}" data-a="setDecimals" data-dec="${d}">${d} Decimals</button>`).join('')}
+    </div>
+  </div>
+
+  <div class="h">Theme & Appearance</div>
+  <div class="panel">
+    <label>Color Palette</label>
+    <div class="chips">
+      ${['teal','dark','midnight','emerald','sunset'].map(th => `<button class="chip ${data.settings.theme===th?'on':''}" data-a="setTheme" data-theme="${th}">${cap(th)}</button>`).join('')}
+    </div>
+  </div>
+
+  <div class="h">Starting balances</div>
+  <div class="panel">
+    <div class="hint" style="margin:0 0 6px">Balances before tracking started. Logged entries build on top of these.</div>
+    ${ACCTS.map(a => `<label>${cap(a)} (${getCurr()})</label><input type="number" inputmode="decimal" step="0.001" data-open="${a}" value="${o[a]}">`).join('')}
+  </div>
+
+  <div class="h">Categories & Spending Limits</div>
+  <div class="panel">
+    <b>Spending</b>${catList('expense')}
+    <div style="height:10px"></div>
+    <b>Income</b>${catList('income')}
+  </div>
+  <div class="panel">
+    <div class="h" style="margin-top:0">New category</div>
+    <select id="c-kind"><option value="expense">Spending</option><option value="income">Income</option></select>
+    <input id="c-name" placeholder="Name">
+    <input id="c-limit" type="number" inputmode="decimal" step="0.001" placeholder="Monthly Limit (${getCurr()})">
+    <select id="c-icon">${ICONS.map(i => `<option>${i}</option>`).join('')}</select>
+    <button class="btn" data-a="addCat">Add category</button>
+  </div>
+
+  <div class="h">Quick-Add Presets</div>
+  <div class="panel">
+    ${data.presets.map(p => `<div class="row"><span>${esc(p.name)} (${num(p.amount)})</span><button class="x" data-a="delPreset" data-id="${p.id}">✕</button></div>`).join('')}
+    <div style="height:8px"></div>
+    <input id="pr-name" placeholder="Preset Name (e.g. ☕ Coffee)">
+    <input id="pr-amt" type="number" inputmode="decimal" step="0.001" placeholder="Amount (${getCurr()})">
+    <button class="btn" data-a="addPreset">Add Preset</button>
+  </div>`;
+}
+
+function chipRow(opts, val, field){
+  return `<div class="chips">${opts.map(o => `<button class="chip ${val===o?'on':''}" data-a="set" data-f="${field}" data-v="${o}">${cap(o)}</button>`).join('')}</div>`;
+}
+
+function sheetHTML(){
+  const f = S.form;
+  const cats = f.kind === 'income' ? data.categories.income : data.categories.expense;
+  const seg = [['expense','Spend'],['income','Income'],['move','Move']]
+    .map(([k,l]) => `<button class="${f.kind===k?'on':''}" data-a="set" data-f="kind" data-v="${k}">${l}</button>`).join('');
+  let body;
+  if(f.kind === 'move'){
+    body = `<label>From</label>${chipRow(ACCTS, f.from, 'from')}
+            <label>To</label>${chipRow(ACCTS, f.to, 'to')}
+            <div class="hint2">${f.from===f.to ? 'From and To must be different' : moveLabel(f.from,f.to)}</div>`;
+  } else {
+    body = `<label>Account</label>${chipRow(['cash','benefit'], f.account, 'account')}
+            <label>Category</label>
+            <div class="chips">${cats.map(c => `<button class="chip ${f.category===c.name?'on':''}" data-a="set" data-f="category" data-v="${esc(c.name)}">${c.icon} ${esc(c.name)}</button>`).join('')}</div>`;
+  }
+
+  const receiptSection = `
+    <div class="receipt-section">
+      <label>Receipt or Photo Attachment</label>
+      ${f.receipt ? `
+        <div class="receipt-preview-row">
+          <img src="${f.receipt}" alt="Receipt" data-a="viewFormReceipt">
+          <div class="receipt-preview-info">
+            <b>Receipt attached</b>
+            <small style="color:var(--muted)">Stored locally in vault</small>
+            <div class="receipt-preview-btns">
+              <button type="button" class="btn ghost btn-sm" data-a="viewFormReceipt">View Full</button>
+              <button type="button" class="btn danger btn-sm" data-a="removeReceipt">Remove</button>
+            </div>
+          </div>
+        </div>
+      ` : `
+        <label class="receipt-upload-box" for="f-receipt">
+          <span class="up-ico">📷</span>
+          <div class="up-txt">
+            <b>Attach Receipt / Take Photo</b>
+            <small>Tap to choose from camera, photos, or paste with Ctrl+V</small>
+          </div>
+        </label>
+      `}
+      <input type="file" id="f-receipt" accept="image/*" style="display:none">
+    </div>`;
+
+  const title = S.editId ? 'Edit transaction' : (f.kind === 'move' ? 'Move money' : f.kind === 'income' ? 'Add income' : 'Add spending');
+  return `
+  <div class="sheetTop"><b>${title}</b><button data-a="close" aria-label="Close">✕</button></div>
+  <div class="seg">${seg}</div>
+  <input class="big" id="f-amt" type="number" inputmode="decimal" step="0.001" min="0" placeholder="0.000" value="${esc(f.amount)}">
+  ${body}
+  <label>Date</label>
+  <input type="date" id="f-date" value="${f.date}">
+  <label>Note & #tags</label>
+  <input id="f-note" value="${esc(f.note)}" placeholder="e.g. Lunch #work">
+  ${receiptSection}
+  <button class="btn" data-a="save">${S.editId ? 'Update' : 'Save'}</button>`;
+}
+
+function viewHTML(){
+  return ({day:dayHTML, month:monthHTML, year:yearHTML, people:peopleHTML, goals:goalsHTML, settings:settingsHTML})[S.view]();
+}
+function navHTML(){
+  const tabs = [['day','📅','Day'],['month','🗓️','Month'],['year','📈','Year'],['people','👥','Debt'],['goals','🎯','Goals'],['settings','⚙️','Vault']];
+  return tabs.map(([k,i,l]) => `<button class="${S.view===k?'on':''}" data-a="tab" data-v="${k}"><i>${i}</i>${l}</button>`).join('');
+}
+
+function render(){
+  document.getElementById('top').innerHTML = topHTML();
+  document.getElementById('main').innerHTML = viewHTML();
+  document.getElementById('nav').innerHTML = navHTML();
+  document.getElementById('sheet').innerHTML = sheetHTML();
+  document.getElementById('sheet').classList.toggle('open', S.sheet);
+  document.getElementById('scrim').classList.toggle('open', S.sheet);
+  const fab = document.getElementById('fab');
+  if(fab) fab.style.display = S.view === 'day' ? 'flex' : 'none';
+  renderPinLock();
+}
+
+function renderPinLock(){
+  const el = document.getElementById('pinLockScreen');
+  if(!el) return;
+  if(S.isLocked && data.settings && data.settings.pin){
+    el.style.display = 'flex';
+    for(let i=0; i<4; i++){
+      const d = document.getElementById(`pdot${i}`);
+      if(d) d.classList.toggle('filled', i < S.enteredPin.length);
+    }
+  } else {
+    el.style.display = 'none';
+  }
+}
+
+function handlePinKey(k){
+  if(k === 'clear'){
+    S.enteredPin = '';
+  } else if(k === 'del'){
+    S.enteredPin = S.enteredPin.slice(0, -1);
+  } else if(S.enteredPin.length < 4 && !isNaN(Number(k))){
+    S.enteredPin += k;
+    if(S.enteredPin.length === 4){
+      if(S.enteredPin === data.settings.pin){
+        S.isLocked = false;
+        S.enteredPin = '';
+        renderPinLock();
+        showToast('Vault unlocked');
+      } else {
+        showToast('Incorrect PIN. Try again.');
+        setTimeout(() => { S.enteredPin = ''; renderPinLock(); }, 400);
+      }
+    }
+  }
+  renderPinLock();
+}
+
+function saveSheet(){
+  const f = S.form;
+  const amt = parseFloat(f.amount);
+  if(!(amt > 0)){ showToast('Enter an amount greater than 0.'); return; }
+  if(!f.date){ showToast('Pick a date.'); return; }
+  const t = {
+    id: S.editId || uid(),
+    kind: f.kind,
+    date: f.date,
+    amount: round3(amt),
+    note: f.note.trim(),
+    receipt: f.receipt || null
+  };
+  
+  const tagMatch = t.note.match(/#([a-zA-Z0-9_]+)/);
+  t.tags = tagMatch ? tagMatch[1] : '';
+
+  if(f.kind === 'move'){
+    if(f.from === f.to){ showToast('From and To must be different.'); return; }
+    t.from = f.from; t.to = f.to;
+  } else {
+    if(!f.category){ showToast('Add a category first.'); return; }
+    t.account = f.account; t.category = f.category; t.icon = iconFor(f.kind, f.category);
+  }
+
+  if(S.editId){
+    const idx = data.tx.findIndex(x => x.id === S.editId);
+    if(idx !== -1) data.tx[idx] = t;
+  } else {
+    data.tx.push(t);
+  }
+
+  save();
+  S.date = f.date;
+  S.sheet = false;
+  S.editId = null;
+  render();
+  showToast('Entry saved to vault');
+}
+
+function editTx(id){
+  const t = data.tx.find(x => x.id === id);
+  if(!t) return;
+  S.editId = id;
+  S.form = {
+    kind: t.kind,
+    account: t.account || 'cash',
+    category: t.category || defaultCat(t.kind),
+    from: t.from || 'cash',
+    to: t.to || 'benefit',
+    amount: String(t.amount),
+    note: t.note || '',
+    date: t.date,
+    receipt: t.receipt || null
+  };
+  S.sheet = true;
+  render();
+}
+
+function openReceiptModal(imgSrc, metaInfo){
+  const m = document.getElementById('receiptModal');
+  const img = document.getElementById('rImg');
+  const title = document.getElementById('rTitle');
+  const meta = document.getElementById('rMeta');
+  if(!m || !img) return;
+
+  img.src = imgSrc;
+  S.activeReceipt = imgSrc;
+  S.activeReceiptMeta = metaInfo;
+  if(metaInfo){
+    title.textContent = metaInfo.category || (metaInfo.kind === 'move' ? 'Transfer' : 'Receipt');
+    meta.textContent = `${metaInfo.date || today()} · ${metaInfo.amount ? money(metaInfo.amount) : ''} ${metaInfo.note ? '· ' + metaInfo.note : ''}`;
+  } else {
+    title.textContent = 'Receipt Attachment';
+    meta.textContent = 'Local receipt photo';
+  }
+  m.classList.add('open');
+}
+
+function closeReceiptModal(){
+  const m = document.getElementById('receiptModal');
+  if(m) m.classList.remove('open');
+  S.activeReceipt = null;
+  S.activeReceiptMeta = null;
+}
+
+async function shareReceiptImage(){
+  if(!S.activeReceipt) return;
+  try{
+    const res = await fetch(S.activeReceipt);
+    const blob = await res.blob();
+    const file = new File([blob], `receipt-${today()}.jpg`, {type: 'image/jpeg'});
+    if(navigator.canShare && navigator.canShare({files: [file]})){
+      await navigator.share({
+        files: [file],
+        title: 'Budget Pro Receipt',
+        text: 'Receipt from Budget Pro vault'
+      });
+      showToast('Receipt shared');
+      return;
+    }
+  }catch(err){
+    if(err.name === 'AbortError') return;
+  }
+  downloadCurrentReceipt();
+}
+
+function downloadCurrentReceipt(){
+  if(!S.activeReceipt) return;
+  const a = document.createElement('a');
+  a.href = S.activeReceipt;
+  a.download = `receipt-${today()}-${uid().slice(0,4)}.jpg`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  showToast('Receipt image downloaded');
+}
+
+async function handleReceiptUpload(file){
+  if(!file || !file.type.startsWith('image/')){
+    showToast('Please select a valid image file.');
+    return;
+  }
+  try{
+    showToast('Compressing image...');
+    const compressed = await compressImage(file, 1200, 0.78);
+    S.form.receipt = compressed;
+    render();
+    showToast('Receipt attached');
+  }catch(e){
+    console.error('Image processing error:', e);
+    showToast('Failed to load image.');
+  }
+}
+
+function addPerson(){
+  const nameInput = document.getElementById('p-name');
+  const typeInput = document.getElementById('p-type');
+  const amtInput = document.getElementById('p-amt');
+  const dueInput = document.getElementById('p-due');
+  const noteInput = document.getElementById('p-note');
+  if(!nameInput || !amtInput) return;
+
+  const name = nameInput.value.trim();
+  const type = typeInput ? typeInput.value : 'lent';
+  const amount = parseFloat(amtInput.value);
+  const due = dueInput ? dueInput.value : '';
+  const note = noteInput ? noteInput.value.trim() : '';
+
+  if(!name){ showToast('Enter a name.'); return; }
+  if(!(amount > 0)){ showToast('Enter an amount greater than 0.'); return; }
+  let p = data.people.find(x => x.name.toLowerCase() === name.toLowerCase());
+  if(!p){ p = {id:uid(), name, lines:[]}; data.people.push(p); }
+  p.lines.push({id:uid(), type, amount:round3(amount), note, date:today(), dueDate:due});
+  save();
+  S.personOpen = p.id;
+  render();
+  showToast('Debt entry added');
+}
+
+function addCat(){
+  const kindEl = document.getElementById('c-kind');
+  const nameEl = document.getElementById('c-name');
+  const limitEl = document.getElementById('c-limit');
+  const iconEl = document.getElementById('c-icon');
+  if(!nameEl) return;
+
+  const kind = kindEl ? kindEl.value : 'expense';
+  const name = nameEl.value.trim();
+  const limit = limitEl ? parseFloat(limitEl.value) || 0 : 0;
+  const icon = iconEl ? iconEl.value : '📦';
+
+  if(!name){ showToast('Enter a name.'); return; }
+  const list = data.categories[kind];
+  if(list.some(c => c.name.toLowerCase() === name.toLowerCase())){ showToast('Category already exists.'); return; }
+  list.push({name, icon, limit: round3(limit)});
+  save();
+  render();
+  showToast('Category added');
+}
+
+function addPreset(){
+  const nameEl = document.getElementById('pr-name');
+  const amtEl = document.getElementById('pr-amt');
+  if(!nameEl || !amtEl) return;
+
+  const name = nameEl.value.trim();
+  const amount = parseFloat(amtEl.value);
+  if(!name || !(amount > 0)){ showToast('Enter valid name and amount.'); return; }
+  data.presets.push({id:uid(), name, amount:round3(amount), kind:'expense', category:data.categories.expense[0]?.name||'Food', account:'cash'});
+  save();
+  render();
+  showToast('Preset added');
+}
+
+// ------------------------------------------
+// 4. File-Centric Vault Save, Share & Open Flows
+// ------------------------------------------
+async function shareVaultFile(){
+  data.lastExport = new Date().toISOString();
+  save();
+  const jsonContent = JSON.stringify(data, null, 2);
+  const fileName = `budget-pro-vault-${today()}.json`;
+  const file = new File([jsonContent], fileName, {type: 'application/json'});
+
+  if(navigator.canShare && navigator.canShare({files: [file]})){
+    try{
+      await navigator.share({
+        files: [file],
+        title: 'Budget Pro Vault Backup',
+        text: `Budget Pro Vault data file (${data.tx.length} entries)`
+      });
+      showToast('Vault backup shared');
+      return;
+    }catch(err){
+      if(err.name === 'AbortError') return;
+    }
+  }
+  // Fallback to saveVaultFile
+  saveVaultFile();
+}
+
+async function saveVaultFile(){
+  data.lastExport = new Date().toISOString();
+  save();
+  const jsonContent = JSON.stringify(data, null, 2);
+  const fileName = `budget-pro-vault-${today()}.json`;
+
+  if('showSaveFilePicker' in window){
+    try{
+      const handle = await window.showSaveFilePicker({
+        suggestedName: fileName,
+        types: [{
+          description: 'Budget Pro Vault File (*.json)',
+          accept: {'application/json': ['.json']}
+        }]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(jsonContent);
+      await writable.close();
+      render();
+      showToast('Vault file saved to disk');
+      return;
+    }catch(err){
+      if(err.name === 'AbortError') return;
+    }
+  }
+
+  // Universal download fallback
+  const blob = new Blob([jsonContent], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  render();
+  showToast('Vault file downloaded');
+}
+
+async function openVaultFile(){
+  if('showOpenFilePicker' in window){
+    try{
+      const [handle] = await window.showOpenFilePicker({
+        types: [{
+          description: 'Budget Pro Vault File (*.json)',
+          accept: {'application/json': ['.json']}
+        }],
+        multiple: false
+      });
+      const file = await handle.getFile();
+      await importFile(file);
+      return;
+    }catch(err){
+      if(err.name === 'AbortError') return;
+    }
+  }
+
+  const input = document.getElementById('imp');
+  if(input) input.click();
+}
+
+function exportCSV(){
+  let csv = 'ID,Date,Kind,Category,Account,From,To,Amount,Note,HasReceipt\n';
+  for(const t of data.tx){
+    const hasR = t.receipt ? 'Yes' : 'No';
+    csv += `"${t.id}","${t.date}","${t.kind}","${t.category||''}","${t.account||''}","${t.from||''}","${t.to||''}","${t.amount}","${(t.note||'').replace(/"/g,'""')}","${hasR}"\n`;
+  }
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `budget-ledger-${today()}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+  showToast('CSV spreadsheet exported');
+}
+
+async function importFile(file){
+  try{
+    const d = JSON.parse(await file.text());
+    if(!d || !Array.isArray(d.tx) || !d.opening || !d.categories) throw new Error('invalid');
+    const modStr = d.lastModified ? formatFullDate(d.lastModified) : 'Unknown date';
+    const receiptsCount = d.tx.filter(x => !!x.receipt).length;
+    askModal('Open Local Vault', `Replace active vault with this file containing ${d.tx.length} transactions and ${receiptsCount} receipts (Saved: ${modStr})?`, () => {
+      data = {...blank(), ...d, settings: {...blank().settings, ...(d.settings || {})}};
+      S.stealth = !!data.settings.stealth;
+      document.documentElement.setAttribute('data-theme', data.settings.theme || 'teal');
+      save();
+      render();
+      showToast('Vault file opened and active');
+    });
+  }catch(err){
+    showToast('Invalid Budget Pro vault JSON file.');
+  }
+}
+
+// ------------------------------------------
+// 5. Action Dispatcher
+// ------------------------------------------
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+});
+
+function handleInstallPrompt(){
+  if(deferredInstallPrompt){
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(choice => {
+      if(choice.outcome === 'accepted'){
+        showToast('Budget Pro installed!');
+      }
+      deferredInstallPrompt = null;
+    });
+  } else {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if(isIOS){
+      askModal('Install on iPhone/iPad', 'To install Budget Pro as a native app on iOS:\n\n1. Tap the Share button (square with arrow ⎋) at the bottom of Safari.\n2. Scroll down and choose "Add to Home Screen" ➕.\n3. Tap "Add" in the top right corner.\n\nBudget Pro will then open full-screen directly from your home screen with full offline access!', () => {});
+    } else {
+      showToast('App is already installed or can be installed via your browser menu.');
+    }
+  }
+}
+
+function act(a, d){
+  switch(a){
+    case 'tab':   S.view = d.v; S.sheet = false; S.editId = null; break;
+    case 'prev':  S.date = shiftDay(S.date,-1); break;
+    case 'next':  S.date = shiftDay(S.date,1); break;
+    case 'today': S.date = today(); break;
+    case 'mprev': S.month = shiftMonth(S.month,-1); break;
+    case 'mnext': S.month = shiftMonth(S.month,1); break;
+    case 'yprev': S.year--; break;
+    case 'ynext': S.year++; break;
+    case 'jumpDay': S.date = d.date; S.view = 'day'; break;
+    case 'jumpMonthDay': S.view = 'month'; break;
+    case 'jumpMonth': S.month = d.month; S.view = 'month'; break;
+    case 'goToSettings': S.view = 'settings'; break;
+    case 'showVaultStatus':
+      showToast(`Vault: Stored on device. ${formatRelativeTime(data.lastModified)}`);
+      break;
+    case 'installAppPrompt':
+      handleInstallPrompt();
+      return;
+    case 'toggleStealth':
+      S.stealth = !S.stealth;
+      data.settings.stealth = S.stealth;
+      save(false);
+      render();
+      break;
+    case 'togglePinLock': {
+      if(data.settings.pin){
+        askModal('Disable PIN Lock', 'Remove the PIN protection from this vault?', () => {
+          data.settings.pin = null;
+          S.isLocked = false;
+          save(false);
+          render();
+          showToast('PIN lock disabled');
+        });
+      } else {
+        askPrompt('Set 4-Digit PIN', 'Enter a 4-digit numeric PIN for vault security:', '', pinVal => {
+          if(pinVal && /^\d{4}$/.test(pinVal.trim())){
+            data.settings.pin = pinVal.trim();
+            save(false);
+            render();
+            showToast('PIN lock enabled');
+          } else if(pinVal !== null) {
+            showToast('PIN must be exactly 4 digits (e.g. 1234).');
+          }
+        });
+      }
+      return;
+    }
+    case 'setCurrency':
+      data.settings.currency = d.curr;
+      save(false);
+      render();
+      showToast(`Currency set to ${d.curr}`);
+      break;
+    case 'setDecimals':
+      data.settings.decimals = parseInt(d.dec, 10);
+      save(false);
+      render();
+      showToast(`Decimals set to ${d.dec}`);
+      break;
+    case 'cycleTheme': {
+      const themes = ['teal','dark','midnight','emerald','sunset'];
+      const nextTh = themes[(themes.indexOf(data.settings.theme||'teal') + 1) % themes.length];
+      data.settings.theme = nextTh;
+      document.documentElement.setAttribute('data-theme', nextTh);
+      save(false);
+      render();
+      break;
+    }
+    case 'setTheme':
+      data.settings.theme = d.theme;
+      document.documentElement.setAttribute('data-theme', d.theme);
+      save(false);
+      render();
+      break;
+    case 'add':   S.editId = null; S.form = newForm(); S.sheet = true; break;
+    case 'close': S.sheet = false; S.editId = null; break;
+    case 'editTx': editTx(d.id); return;
+    case 'viewReceipt': {
+      const t = data.tx.find(x => x.id === d.id);
+      if(t && t.receipt) openReceiptModal(t.receipt, t);
+      return;
+    }
+    case 'viewFormReceipt': {
+      if(S.form && S.form.receipt){
+        openReceiptModal(S.form.receipt, {
+          category: S.form.category || 'Receipt',
+          amount: S.form.amount || '0',
+          date: S.form.date || today(),
+          note: S.form.note || ''
+        });
+      }
+      return;
+    }
+    case 'closeReceiptModal': closeReceiptModal(); return;
+    case 'shareReceipt': shareReceiptImage(); return;
+    case 'downloadReceipt': downloadCurrentReceipt(); return;
+    case 'removeReceipt':
+      S.form.receipt = null;
+      render();
+      showToast('Receipt removed');
+      return;
+    case 'set':
+      if(d.f === 'kind'){ S.form.kind = d.v; S.form.category = defaultCat(d.v); }
+      else S.form[d.f] = d.v;
+      break;
+    case 'save': return saveSheet();
+    case 'del':
+      askModal('Delete Entry', 'Are you sure you want to delete this ledger entry?', () => {
+        data.tx = data.tx.filter(t => t.id !== d.id);
+        save();
+        render();
+        showToast('Entry deleted');
+      });
+      break;
+    case 'person': S.personOpen = (S.personOpen === d.id) ? null : d.id; break;
+    case 'addPerson': return addPerson();
+    case 'delLine': {
+      const p = data.people.find(x => x.id === d.p);
+      if(p){ p.lines = p.lines.filter(l => l.id !== d.id); save(); }
+      render();
+      showToast('Debt line removed');
+      break;
+    }
+    case 'delPerson':
+      askModal('Delete Person', 'Delete this person profile and all associated debt?', () => {
+        data.people = data.people.filter(p => p.id !== d.p);
+        S.personOpen = null;
+        save();
+        render();
+        showToast('Profile deleted');
+      });
+      break;
+    case 'addCat': return addCat();
+    case 'delCat':
+      data.categories[d.k].splice(Number(d.i),1);
+      save();
+      render();
+      showToast('Category removed');
+      break;
+    case 'addPreset': return addPreset();
+    case 'delPreset':
+      data.presets = data.presets.filter(p => p.id !== d.id);
+      save();
+      render();
+      showToast('Preset removed');
+      break;
+    case 'usePreset': {
+      const p = data.presets.find(x => x.id === d.id);
+      if(!p) return;
+      data.tx.push({id:uid(), kind:p.kind, date:S.date, amount:p.amount, note:p.name, account:p.account, category:p.category, tags:'', receipt:null});
+      save();
+      render();
+      showToast(`Logged ${p.name}`);
+      break;
+    }
+    case 'editBudget': {
+      const m = d.m;
+      const cur = data.budgets[m] || '';
+      askPrompt('Monthly Budget', `Set monthly spending budget limit for ${prettyMonth(m)} (${getCurr()}):`, cur, val => {
+        if(val !== null && val !== ''){
+          const numVal = parseFloat(val);
+          if(!isNaN(numVal) && numVal >= 0) data.budgets[m] = round3(numVal);
+          else delete data.budgets[m];
+          save();
+          render();
+          showToast('Monthly budget updated');
+        } else if(val === ''){
+          delete data.budgets[m];
+          save();
+          render();
+          showToast('Monthly budget removed');
+        }
+      });
+      break;
+    }
+    case 'addGoal': {
+      const nameEl = document.getElementById('g-name');
+      const targetEl = document.getElementById('g-target');
+      if(!nameEl || !targetEl) return;
+      const name = nameEl.value.trim();
+      const target = parseFloat(targetEl.value);
+      if(!name || !(target > 0)){ showToast('Enter valid goal name and target.'); return; }
+      data.goals.push({id:uid(), name, target:round3(target), allocated:0});
+      save();
+      render();
+      showToast('Savings goal created');
+      break;
+    }
+    case 'fundGoal': {
+      const g = data.goals.find(x => x.id === d.id);
+      if(!g) return;
+      askPrompt('Allocate Funds', `Allocate amount to "${g.name}" (${getCurr()}):`, '10', val => {
+        if(val !== null && val !== ''){
+          const amt = parseFloat(val);
+          if(!isNaN(amt) && amt > 0){
+            g.allocated = add3(g.allocated, amt);
+            save();
+            render();
+            showToast('Funds allocated');
+          } else {
+            showToast('Enter a valid amount.');
+          }
+        }
+      });
+      break;
+    }
+    case 'withdrawGoal': {
+      const g = data.goals.find(x => x.id === d.id);
+      if(!g) return;
+      askPrompt('Withdraw Funds', `Withdraw amount from "${g.name}" (${getCurr()}):`, '10', val => {
+        if(val !== null && val !== ''){
+          const amt = parseFloat(val);
+          if(!isNaN(amt) && amt > 0){
+            g.allocated = Math.max(0, sub3(g.allocated, amt));
+            save();
+            render();
+            showToast('Funds withdrawn');
+          } else {
+            showToast('Enter a valid amount.');
+          }
+        }
+      });
+      break;
+    }
+    case 'delGoal':
+      askModal('Delete Goal', 'Delete this savings goal bucket?', () => {
+        data.goals = data.goals.filter(g => g.id !== d.id);
+        save();
+        render();
+        showToast('Goal deleted');
+      });
+      break;
+    case 'clearSearch':
+      S.searchQuery = ''; S.minAmt = ''; S.maxAmt = '';
+      render();
+      break;
+    case 'shareVaultFile': shareVaultFile(); return;
+    case 'saveVaultFile': saveVaultFile(); return;
+    case 'openVaultFile': openVaultFile(); return;
+    case 'exportCSV': exportCSV(); return;
+    case 'reset':
+      askModal('Erase All Vault Data', 'Are you sure you want to erase ALL local data? Make sure to save or share a vault file (.json) first.', () => {
+        data = blank();
+        save();
+        render();
+        showToast('All vault data erased');
+      });
+      break;
+  }
+  render();
+}
+
+// ------------------------------------------
+// 6. Global Event Handlers & Paste Listener
+// ------------------------------------------
+document.addEventListener('click', e => {
+  const pk = e.target.closest('[data-pk]');
+  if(pk){ handlePinKey(pk.dataset.pk); return; }
+
+  const el = e.target.closest('[data-a]');
+  if(el) act(el.dataset.a, el.dataset);
+});
+
+document.addEventListener('input', e => {
+  const id = e.target.id;
+  if(id === 'f-amt') S.form.amount = e.target.value;
+  else if(id === 'f-note') S.form.note = e.target.value;
+  else if(id === 'f-date') S.form.date = e.target.value;
+  else if(id === 's-query' || id === 's-min' || id === 's-max'){
+    if(id === 's-query') S.searchQuery = e.target.value;
+    else if(id === 's-min') S.minAmt = e.target.value;
+    else S.maxAmt = e.target.value;
+    const pos = e.target.selectionStart;
+    render();
+    const el = document.getElementById(id);
+    if(el){ el.focus(); try{ el.setSelectionRange(pos, pos); }catch(_){} }
+  }
+});
+
+document.addEventListener('change', async e => {
+  const el = e.target;
+  if(el.dataset && el.dataset.open){
+    data.opening[el.dataset.open] = round3(parseFloat(el.value) || 0);
+    save();
+    render();
+  } else if(el.id === 'imp' && el.files[0]){
+    await importFile(el.files[0]);
+    el.value = '';
+  } else if(el.id === 'f-receipt' && el.files[0]){
+    await handleReceiptUpload(el.files[0]);
+    el.value = '';
+  }
+});
+
+// Image Clipboard Paste Support (Ctrl+V)
+window.addEventListener('paste', async e => {
+  if(!S.sheet) return;
+  const items = e.clipboardData && e.clipboardData.items;
+  if(!items) return;
+  for(const item of items){
+    if(item.type.startsWith('image/')){
+      const file = item.getAsFile();
+      if(file){
+        e.preventDefault();
+        await handleReceiptUpload(file);
+        break;
+      }
+    }
+  }
+});
+
+// Auto-lock when switching apps on mobile
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'hidden' && data.settings && data.settings.pin){
+    S.isLocked = true;
+    renderPinLock();
+  }
+});
+
+// Register Service Worker for Offline PWA Support
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => {
+      console.warn('Service worker registration failed:', err);
+    });
+  });
+}
+
+render();
+</script>
+</body>
+</html>
